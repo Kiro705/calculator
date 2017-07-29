@@ -6,9 +6,48 @@ function Calculator(input) {
 function TreeNode(name, ...children) {
   this.name = name;
   this.children = children;
-  // if (this.children.length === 0){
-  //   this.children = undefined;
-  // }
+}
+
+function VisitToPrint(){
+  this.visit = function(node) {
+    switch(node.name) {
+      case "Expression":
+        return node.children[0].accept(this) + node.children[1].accept(this);
+        break;
+      case "Term":
+        return node.children[0].accept(this) + node.children[1].accept(this);
+        break;
+      case "A":
+        if(node.children.length > 0) {
+          return  node.children[0] + node.children[1].accept(this) + node.children[2].accept(this);
+        } else {
+          return "";
+        }
+        break;
+      case "B":
+        if(node.children.length > 0) {
+          return  node.children[0] + node.children[1].accept(this) + node.children[2].accept(this);
+        } else {
+          return "";
+        }
+        break;
+      case "F":
+        if(node.children.length === 3) {
+          return  node.children[0] + node.children[1].accept(this) + node.children[2];
+        } else if(node.children.lenth === 2) {
+          return node.children[0] + node.children[1].accept(this);
+        } else {
+          return node.children[0];
+        }
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+TreeNode.prototype.accept = function(visitor){
+  return visitor.visit(this);
 }
 
 Calculator.prototype.lexer = function(str) {
@@ -99,23 +138,27 @@ Calculator.prototype.parseF = function() {
   }
 }
 
-Calculator.prototype.returnString = function(){
-  var stack = [this.root];
-  var result = '';
-  while (stack.length){
-    var current = stack.shift();
-    if(typeof current === 'string'){
-      result += current;
-    }
-    if(typeof current === 'object'){
-      for (var i = current.children.length - 1; i >= 0; i--){
-        stack.unshift(current.children[i]);
-      }
-    }
-    console.log(result);
-  }
-  return result;
-}
+// Calculator.prototype.returnString = function(){
+//   var stack = [this.root];
+//   var result = '';
+//   while (stack.length){
+//     var current = stack.shift();
+//     if(typeof current === 'string'){
+//       result += current;
+//     }
+//     if(typeof current === 'object'){
+//       for (var i = current.children.length - 1; i >= 0; i--){
+//         stack.unshift(current.children[i]);
+//       }
+//     }
+//     console.log(result);
+//   }
+//   return result;
+// }
+
+
 
 var calc = new Calculator('1+(2*3)');
-calc.returnString();
+var visitToPrint = new VisitToPrint();
+console.log(calc.root.accept(visitToPrint));
+
